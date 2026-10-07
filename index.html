@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>বেলাল দোকান হিসাব</title><link rel="stylesheet" href="style.css">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d6efd">
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo">A</div><div><b id="headName">বেলাল কম্পিউটার সল্যুশন</b><small>দৈনন্দিন আয়–ব্যয় ও বাকি হিসাব</small></div></div>
+  <button class="icon-btn" onclick="showPage('settings')">⚙️</button>
+</header>
+<main>
+<section id="dashboard" class="page active">
+ <div class="shop-banner">
+  <div><span class="mini">COMPUTER • LAPTOP • PRINTING • ONLINE SERVICE</span><h1 id="shopTitle">বেলাল কম্পিউটার সল্যুশন</h1><p id="shopAddress">সোনার পাড়া বাজার, জালিয়া পালং, ইনানী, উখিয়া, কক্সবাজার</p></div>
+  <div class="owner-photo">📷<small>আপনার ছবি<br>এখানে বসবে</small></div>
+ </div>
+ <div class="welcome"><div><span>আজকের হিসাব</span><h2 id="todayText"></h2></div><button class="primary" onclick="openAdd()">＋ হিসাব যোগ</button></div>
+ <div class="cards">
+  <div class="card income"><span>আজকের আয়</span><strong id="todayIncome">৳ 0</strong></div>
+  <div class="card expense"><span>আজকের খরচ</span><strong id="todayExpense">৳ 0</strong></div>
+  <div class="card deposit"><span>আজ জমা</span><strong id="todayDeposit">৳ 0</strong></div>
+  <div class="card due"><span>মোট বাকি</span><strong id="totalDue">৳ 0</strong></div>
+  <div class="card profit"><span>আজকের লাভ</span><strong id="todayProfit">৳ 0</strong></div>
+ </div>
+ <div class="quick-grid">
+  <button onclick="openAdd('income')">💰<b>আয় জমা</b><small>বিক্রির টাকা</small></button>
+  <button onclick="openAdd('expense')">💸<b>খরচ জমা</b><small>দোকানের খরচ</small></button>
+  <button onclick="openDue()">👤<b>বাকি হিসাব</b><small>কাস্টমারের বাকি</small></button>
+  <button onclick="showPage('cash')">💵<b>ক্যাশ ব্যালেন্স</b><small>হাতে কত টাকা</small></button>
+  <button onclick="showPage('reports')">📊<b>মাসিক রিপোর্ট</b><small>পুরো মাস</small></button>
+  <button onclick="showPage('backup')">💾<b>Backup / Restore</b><small>ডাটা নিরাপদ রাখুন</small></button>
+ </div>
+ <div class="section-head"><h2>সাম্প্রতিক লেনদেন</h2><button onclick="showPage('transactions')">সব দেখুন →</button></div>
+ <div id="recentList" class="list"></div>
+</section>
+
+<section id="transactions" class="page">
+ <div class="section-head"><h2>সব লেনদেন</h2><button class="primary" onclick="openAdd()">＋ যোগ</button></div>
+ <div class="filters"><input id="search" placeholder="কাস্টমার/কাজ খুঁজুন..." oninput="renderTransactions()"><select id="filterType" onchange="renderTransactions()"><option value="all">সব</option><option value="income">আয়</option><option value="expense">খরচ</option><option value="deposit">জমা</option></select></div>
+ <div id="transactionList" class="list"></div>
+</section>
+
+<section id="dues" class="page">
+ <div class="section-head"><h2>বাকি হিসাব</h2><button class="primary" onclick="openDue()">＋ বাকি যোগ</button></div>
+ <div class="due-summary">মোট বাকি <b id="duePageTotal">৳ 0</b></div><div id="dueList" class="list"></div>
+</section>
+
+<section id="cash" class="page">
+ <div class="section-head"><h2>দৈনিক ক্যাশ ব্যালেন্স</h2></div>
+ <div class="cash-box"><span>শুরুর ক্যাশ</span><input id="openingCash" type="number" min="0" oninput="saveOpeningCash()"><div class="cash-lines"><p>＋ আজকের আয় <b id="cashIncome">৳ 0</b></p><p>＋ বাকি আদায় <b id="cashDuePaid">৳ 0</b></p><p>− আজকের খরচ <b id="cashExpense">৳ 0</b></p><p class="total">হাতে থাকার কথা <b id="cashTotal">৳ 0</b></p></div></div>
+ <p class="hint">বাকি আদায় যোগ করতে “বাকি হিসাব” থেকে কাস্টমারের জমা দিন।</p>
+</section>
+
+<section id="reports" class="page">
+ <div class="section-head"><h2>মাসিক রিপোর্ট</h2><button onclick="printReport()">🖨️ প্রিন্ট / PDF</button></div>
+ <div class="report-box"><label>মাস নির্বাচন<input type="month" id="reportMonth" onchange="renderReport()"></label>
+ <div class="report-grid"><div><span>মোট আয়</span><b id="monthIncome">৳ 0</b></div><div><span>মোট খরচ</span><b id="monthExpense">৳ 0</b></div><div><span>লাভ</span><b id="monthProfit">৳ 0</b></div><div><span>লেনদেন</span><b id="monthCount">0</b></div></div></div>
+ <div id="reportDetails" class="list"></div>
+</section>
+
+<section id="backup" class="page">
+ <div class="section-head"><h2>Backup / Restore</h2></div>
+ <div class="backup-card"><div class="backup-icon">💾</div><h2>হিসাবের ব্যাকআপ রাখুন</h2><p>একটি JSON ফাইল হিসেবে আপনার সব হিসাব সংরক্ষণ করুন। ফোন/কম্পিউটার বদলালেও Restore করা যাবে।</p>
+ <button class="primary wide" onclick="backupData()">⬇️ Backup Download</button>
+ <label class="upload"><span>⬆️ Backup Restore</span><input type="file" accept=".json" onchange="restoreData(event)"></label></div>
+</section>
+
+<section id="settings" class="page">
+ <div class="section-head"><h2>দোকানের তথ্য</h2></div>
+ <div class="form-card">
+  <label>দোকানের নাম<input id="shopName"></label><label>মোবাইল নম্বর<input id="shopPhone"></label><label>ঠিকানা<textarea id="shopAddressInput"></textarea></label>
+  <label>উপরের প্রোফাইল ছবির ফাইল নাম<input id="ownerPhotoName" placeholder="owner.jpg"></label>
+  <button class="primary wide" onclick="saveSettings()">সেভ করুন</button>
+ </div>
+ <div class="hint">আপনার ছবি বসাতে পরের ধাপে আপনার ছবিটি দিলে আমি অ্যাপের উপরে বসিয়ে দেব।</div>
+</section>
+</main>
+
+<nav class="bottom-nav"><button class="nav active" data-page="dashboard" onclick="showPage('dashboard')">🏠<span>হোম</span></button><button class="nav" data-page="transactions" onclick="showPage('transactions')">📒<span>লেনদেন</span></button><button class="nav add" onclick="openAdd()">＋</button><button class="nav" data-page="dues" onclick="showPage('dues')">👤<span>বাকি</span></button><button class="nav" data-page="reports" onclick="showPage('reports')">📊<span>রিপোর্ট</span></button></nav>
+
+<div id="modal" class="modal"><div class="modal-box"><button class="close" onclick="closeModal()">×</button><h2>হিসাব যোগ করুন</h2>
+<form id="entryForm"><div class="type-tabs"><button type="button" class="tab active" data-type="income">আয়</button><button type="button" class="tab" data-type="expense">খরচ</button><button type="button" class="tab" data-type="deposit">জমা</button></div>
+<input type="hidden" id="entryType" value="income"><label>বিবরণ<input id="entryTitle" required placeholder="যেমন: প্রিন্ট / ফটোকপি"></label><label>কাস্টমারের নাম<input id="entryCustomer"></label><label>টাকার পরিমাণ<input id="entryAmount" type="number" min="0" required></label><label>তারিখ<input id="entryDate" type="date" required></label><label>নোট<textarea id="entryNote"></textarea></label><button class="primary wide">সেভ করুন</button></form></div></div>
+
+<div id="dueModal" class="modal"><div class="modal-box"><button class="close" onclick="closeDue()">×</button><h2>বাকি হিসাব</h2>
+<form id="dueForm"><input type="hidden" id="dueEditId"><label>কাস্টমারের নাম<input id="dueName" required></label><label>মোবাইল<input id="duePhone"></label><label>মোট বাকি<input id="dueAmount" type="number" min="0" required></label><label>এখন জমা<input id="duePaid" type="number" min="0" value="0"></label><label>তারিখ<input id="dueDate" type="date" required></label><label>নোট<textarea id="dueNote"></textarea></label><button class="primary wide">সেভ করুন</button></form></div></div>
+<script src="app.js"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  });
+}
+</script>
+
+</body></html>
